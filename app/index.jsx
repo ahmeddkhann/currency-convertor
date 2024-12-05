@@ -2,21 +2,18 @@ import { StyleSheet, Text, View, FlatList, TextInput, Pressable } from 'react-na
 import React, { useState } from 'react';
 import currency from './constants'; // Ensure constants.js exports an object
 
-
 const CurrencyConvertor = () => {
   const [inputValue, setInputValue] = useState('');
   const [resultValue, setResultValue] = useState('');
+  const [selectedItem, setSelectedItem] = useState(null); // State for selected item
 
   const converter = (targetValue) => {
-   
-
     const inputAmount = parseFloat(inputValue);
     if (!isNaN(inputAmount)) {
       const resultantAmount = inputAmount * targetValue.valueInPKR;
       const result = `${targetValue.flag} ${resultantAmount.toFixed(2)} ${targetValue.currencyLogo}`;
       setResultValue(result);
-    } 
-    
+    }
   };
 
   return (
@@ -39,8 +36,11 @@ const CurrencyConvertor = () => {
         contentContainerStyle={styles.listContainer}
         renderItem={({ item }) => (
           <Pressable
-            style={styles.item}
-            onPress={() => converter(item)}
+            style={[styles.item, selectedItem?.country === item.country && styles.selectedItem]} // Apply selectedItem style
+            onPress={() => {
+              setSelectedItem(item); // Set the selected item
+              converter(item); // Convert currency
+            }}
           >
             <Text style={styles.flag}>{item.flag}</Text>
             <Text style={styles.text}>{item.country}</Text>
@@ -94,6 +94,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 8,
     elevation: 2,
+  },
+  selectedItem: {
+    backgroundColor: '#d3d3d3', // Gray background for selected item
   },
   flag: {
     fontSize: 24,
